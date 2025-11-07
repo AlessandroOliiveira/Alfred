@@ -1,28 +1,43 @@
 import { Tabs } from 'expo-router';
+import { Platform } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function AppLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
+        tabBarActiveTintColor: '#6366F1',
+        tabBarInactiveTintColor: '#9CA3AF',
+        headerShown: false,
+        tabBarStyle: {
+          height: Platform.OS === 'ios' ? 85 : 65,
+          paddingBottom: Platform.OS === 'ios' ? 25 : 10,
+          paddingTop: 8,
+          borderTopWidth: 1,
+          borderTopColor: '#E5E7EB',
+          backgroundColor: '#FFFFFF',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
         },
-        headerTintColor: Colors[colorScheme ?? 'light'].text,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          marginTop: 2,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
+          title: 'Início',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <IconSymbol size={24} name="house.fill" color={color} />
           ),
         }}
       />
@@ -30,9 +45,8 @@ export default function AppLayout() {
         name="rotina"
         options={{
           title: 'Rotina',
-          headerShown: false,
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="chevron.right" color={color} />
+            <IconSymbol size={24} name="checklist" color={color} />
           ),
         }}
       />
@@ -40,19 +54,17 @@ export default function AppLayout() {
         name="estudos"
         options={{
           title: 'Estudos',
-          headerShown: false,
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="chevron.right" color={color} />
+            <IconSymbol size={24} name="book.fill" color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="financeiro"
         options={{
-          title: 'Financeiro',
-          headerShown: false,
+          title: 'Finanças',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="chevron.right" color={color} />
+            <IconSymbol size={24} name="dollarsign" color={color} />
           ),
         }}
       />
@@ -60,10 +72,21 @@ export default function AppLayout() {
         name="fiverr"
         options={{
           title: 'Fiverr',
-          headerShown: false,
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="chevron.right" color={color} />
+            <IconSymbol size={24} name="briefcase.fill" color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="secretaria"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="planejamento"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

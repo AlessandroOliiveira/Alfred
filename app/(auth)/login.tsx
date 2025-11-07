@@ -1,27 +1,32 @@
-import { useState } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
+import { Input } from '@/components/common/Input';
 import { useUserStore } from '@/store/useUserStore';
-import { validateEmail, validatePassword } from '@/utils/validators';
 import { generateId, getCurrentDate } from '@/utils/helpers';
+import { validateEmail, validatePassword } from '@/utils/validators';
+import clsx from 'clsx';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
 
+  const [isSignUp, setIsSignUp] = useState(true);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleSubmit = async () => {
+    // Reset errors
+    setErrors({});
+
     // Validate inputs
     const newErrors: Record<string, string> = {};
 
-    if (!name.trim()) {
+    if (isSignUp && !name.trim()) {
       newErrors.name = 'Nome é obrigatório';
     }
 
@@ -46,7 +51,7 @@ export default function LoginScreen() {
       // In production, use Firebase Authentication
       const user = {
         id: generateId(),
-        name,
+        name: isSignUp ? name : 'Usuário',
         email,
         createdAt: getCurrentDate(),
         updatedAt: getCurrentDate(),
@@ -55,68 +60,109 @@ export default function LoginScreen() {
       setUser(user);
       router.replace('/(app)');
     } catch (error) {
-      console.error('Login error:', error);
-      setErrors({ general: 'Erro ao fazer login. Tente novamente.' });
+      console.error('Auth error:', error);
+      setErrors({
+        general: `Erro ao ${isSignUp ? 'criar conta' : 'fazer login'}. Tente novamente.`
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  const toggleMode = () => {
+    setIsSignUp(!isSignUp);
+    setErrors({});
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1"
+      className="flex-1 bg-background"
     >
-      <ScrollView className="flex-1 bg-background">
-        <View className="flex-1 px-6 pt-20">
-          <Text className="text-4xl font-bold text-text-primary mb-2">
-            Bem-vindo!
-          </Text>
-          <Text className="text-lg text-text-secondary mb-8">
-            Sua secretária virtual pessoal
-          </Text>
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="flex-1 px-6 pt-20 pb-8 bg-background">
+          {/* Header */}
+          <View className="mb-12">
+            <Text className="text-4xl font-bold text-text-primary mb-2">
+              {isSignUp ? 'Criar Conta' : 'Bem-vindo de volta!'}
+            </Text>
+            <Text className="text-lg text-text-secondary">
+              {isSignUp
+                ? 'Crie sua conta e tenha sua secretária virtual pessoal'
+                : 'Entre para acessar sua secretária virtual'}
+            </Text>
+          </View>
 
-          <Input
-            label="Nome"
-            value={name}
-            onChangeText={setName}
-            placeholder="Seu nome"
-            error={errors.name}
-          />
+          {/* Form */}
+          <View>
+            {isSignUp && (
+              <Input
+                label="Nome"
+                value={name}
+                onChangeText={setName}
+                placeholder="Seu nome completo"
+                error={errors.name}
+              />
+            )}
 
-          <Input
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="seu@email.com"
-            keyboardType="email-address"
-            error={errors.email}
-          />
+            <Input
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="seu@email.com"
+              keyboardType="email-address"
+              error={errors.email}
+            />
 
-          <Input
-            label="Senha"
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Mínimo 6 caracteres"
-            secureTextEntry
-            error={errors.password}
-          />
+            <Input
+              label="Senha"
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Mínimo 6 caracteres"
+              secureTextEntry
+              error={errors.password}
+            />
 
-          {errors.general && (
-            <Text className="text-danger text-sm mb-4">{errors.general}</Text>
-          )}
+            {errors.general && (
+              <Text className="text-danger text-sm mb-4 text-center">
+                {errors.general}
+              </Text>
+            )}
 
-          <Button
-            title="Entrar"
-            onPress={handleLogin}
-            loading={loading}
-            className="mt-4"
-          />
+            <Button
+              title={isSignUp ? 'Criar Conta' : 'Entrar'}
+              onPress={handleSubmit}
+              loading={loading}
+              className="mt-2"
+            />
 
-          <Text className="text-text-secondary text-center mt-6 text-sm">
-            Este é um app de demonstração.{'\n'}
-            Para produção, configure o Firebase Authentication.
-          </Text>
+            {/* Toggle mode */}
+            <View className="flex-row justify-center items-center mt-6">
+              <Text className="text-text-secondary text-sm">
+                {isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?'}
+              </Text>
+              <TouchableOpacity onPress={toggleMode} disabled={loading}>
+                <Text className={clsx(
+                  'text-sm font-semibold ml-1',
+                  loading ? 'text-text-secondary' : 'text-primary'
+                )}>
+                  {isSignUp ? 'Entrar' : 'Criar conta'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Demo notice */}
+          <View className="mt-auto pt-8">
+            <Text className="text-text-secondary text-center text-xs">
+              Este é um app de demonstração.{'\n'}
+              Para produção, configure o Firebase Authentication.
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

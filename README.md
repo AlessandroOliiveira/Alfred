@@ -8,7 +8,7 @@ Um aplicativo móvel completo de secretária virtual construído com Expo React 
 - **Gestão de Rotina** - Acompanhe e gerencie suas atividades diárias
 - **Controle Financeiro** - Registre receitas e despesas, visualize seu saldo
 - **Acompanhamento de Estudos** - Rastreie progresso em Inglês e Concurso MP
-- **Gestão Fiverr** - Gerencie tarefas e clientes do Fiverr
+- **Gestão de tarefas** - Gerencie tarefas
 - **Assistente IA** - Chat com IA integrada via Perplexity API
 - **Notificações** - Lembretes automáticos de rotina e prazos
 

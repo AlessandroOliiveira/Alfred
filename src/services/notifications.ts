@@ -4,6 +4,8 @@ import { Platform } from 'react-native';
 // Configure notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
@@ -60,7 +62,10 @@ export class NotificationService {
         body: `${title} começa em 15 minutos`,
         data: { routineId },
       },
-      trigger,
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: trigger,
+      },
     });
 
     return notificationId;
@@ -82,25 +87,26 @@ export class NotificationService {
         body: `"${title}" vence amanhã`,
         data: { taskId },
       },
-      trigger: notificationTime,
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: notificationTime,
+      },
     });
 
     return notificationId;
   }
 
   async scheduleStudyReminder(hour: number): Promise<string> {
-    const trigger = {
-      hour,
-      minute: 0,
-      repeats: true,
-    };
-
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Hora de estudar!',
         body: 'Não esqueça da sua meta diária de estudos',
       },
-      trigger,
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour,
+        minute: 0,
+      },
     });
 
     return notificationId;

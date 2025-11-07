@@ -1,14 +1,13 @@
 import { Redirect } from 'expo-router';
 import { useUserStore } from '@/store/useUserStore';
 
-export default function AuthIndex() {
+export default function Index() {
   const user = useUserStore((state) => state.user);
 
-  // If already logged in, redirect to app
+  // Redirect based on auth state
   if (user) {
     return <Redirect href="/(app)" />;
   }
 
-  // Otherwise, show login
   return <Redirect href="/(auth)/login" />;
 }
